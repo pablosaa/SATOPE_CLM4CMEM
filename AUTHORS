@@ -1,0 +1,38 @@
+Authors of CMEM 
+==================
+
+The main development of the Community Microwave Emission Modelling Platform is done through the 
+
+            Data Assimilation Section 
+
+at the
+
+       European Centre for Medium-Range Weather Forecasts 
+               (ECMWF - http://www.ecmwf.int ). 
+
+and
+
+       Institut National the Recheches Agronomiques (France)
+                      (INRA  -  http://www.inra.fr/)
+
+
+Main programmers:
+=================
+
+Patricia de Rosnay
+Joaquin Munoz Sabater
+
+Past contributors:
+==================
+
+Matthias Drusch (ECMWF)
+Thomas Holmes  (INPE)
+Jean-Pierre Wigneron (INRA)
+
+SATOPE_CLM4CMEM:
+This is a derivations from original CMEM, to calculate Satellite TBs
+usin CLM as input. For the DFG project FOR2131
+====================================================================
+
+Pablo Saavedra G. (UNI BONN) [pablosaa@uni-bonn.de]
+

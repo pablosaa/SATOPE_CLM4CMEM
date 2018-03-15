@@ -1,0 +1,169 @@
+Community Microwave Emission Modelling Platform (CMEM)
+Copyright 2006-2014 ECMWF.
+
+This product includes software developed at ECMWF (http://www.ecmwf.int).
+
+
+References to scientific peer reviewed journals:
+==============================================
+
+1- Soil Dielectric constant (CIDIEL): dielsoil_sub.F90 codes rely on paramaterisations:
+
+    'Wang' relies on parameterisation:
+     Wang and Schmugge, 1980: An empirical model for the 
+     complex dielectric permittivity of soils as a function of water
+     content. IEEE Trans. Geosci. Rem. Sens., GE-18, No. 4, 288-295.
+
+    'Dobson' relies on parameterisation:
+     Dobson et al., 1985: Microwave Dielectric behavior of 
+     wet soil - part II: Dielectric mixing models,
+     IEEE Trans. Geosc. Rem. Sens., GE-23, No. 1, 35-46.
+
+    'Mironov' relies on parameterisation:
+     Mironov et al: Generalized Refractive Mixing Dielectric Model for moist soil
+     IEEE Trans. Geosc. Rem. Sens., vol 42 (4), 773-785. 2004.
+
+
+2- Effective temperature (CITEFF): teff_sub.F90 codes rely on paramaterisations:
+
+    'Choudhury' relies on parameterisation:
+     Choudhury, B., T. Schmugge, and T. Mo (1982), A parameterization of effective 
+     soil temperature for microwave emission, J. Geophys. Res., 87, 1301–1304
+
+    'Wigneron'relies on parameterisation:
+     Wigneron, J.-P., L. Laguerre, and Y. Kerr (2001), A simple parmeterization 
+     of the L-band microwave emission from rough agricultural soils, IEEE Trans. 
+     Geosci. Remote. Sens., 39, 1697–1707.
+
+    'Holmes' relies on parameterisation:
+     Holmes, T. R. H., P. de Rosnay, R. de Jeu, R. J.-P. Wigneron, Y. Kerr, J.-C. 
+     Calvet, M. J. Escorihuela, K. Saleh, and F. Lemaître (2006), A new 
+     parameterization of the effective temperature for L band radiometry, 
+     Geophys. Res. Lett., 33, L07405, doi:10.1029/2006GL025724.
+
+3- Smooth Surface Emissivity (CISMR): fresnel_sub.F90 and wilheit_sub.F90 rely on paramaterisations:
+
+    'Fresnel' relies on parameterisation
+     Njoku and Kong, 1977: Theory for passive microwave remote sensing
+     of near-surface soil moisture. Journal of Geophysical Research, 
+     Vol. 82, No. 20, 3108-3118.
+
+    'Wilheit' relies on parameterisation:
+     Wilheit, 1978: Radiative transfer in a plane stratified dielectric,
+     IEEE Transactions Geoscience Electronics, Vol. GE-16, No. 2, 138-143.
+
+
+4- Surface roughness (CIRGHR): codes in cmem_init.F90 and in rghref_sub.F90 
+
+    'Choudhury' relies on parameterisation:
+     . Choudhury et al., 1979: Effect of surface roughness on the
+     microwave emission from soils, J.Geo.Res. Vol.84, 5699-5706
+     . Wang and Choudhury, 1981: Remote sensing of soil moisture
+     content over bare field at 1.4 GHz frequency, J.Geo.Res.
+     Vol.86, 5277-5287    
+
+    'Wsimple' relies a parameterisation described in:
+     Wigneron, J.-P., L. Laguerre, and Y. Kerr, 2001: A Simple Parmeterization 
+     of the L-band Microwave Emission from Rough Agricultural Soils. 
+     IEEE Trans. Geosc. Remote Sens., 39, 1697–1707.
+
+    'Wegmueller' relies on parameterisation:
+     Wegmueller and Maetzler, 1999: Rough bare soil reflectivity model,
+     IEEE Trans. Geosci. Remote Sensing, Vol.37, No.3, 1391-1395.
+
+    'Wtexture' relies on a parameterisation described in:
+     Wigneron, J.-P., L. Laguerre, and Y. Kerr, 2001: A Simple Parmeterization 
+     of the L-band Microwave Emission from Rough Agricultural Soils. 
+     IEEE Trans. Geosc. Remote Sens., 39, 1697–1707.
+
+    'Wigneron' relies on a parameterisation described in:
+     . Wigneron, J.-P., Y. Kerr, P. Waldteufel, K. Saleh, M.-J. Escorihuela, 
+     P. Richaume, P. Ferrazzoli, P. de Rosnay, R. Gurney, J.-C. Calvet, 
+     M. Guglielmetti, B. Hornbuckle, C. M¨atzler, T. Pellarin, and M. Schwank, 2007: 
+     L-band Microwave Emission of the Biosphere (L-MEB) Model: description and calibration against
+     experimental data sets over crop fields. Remote sens. environ., 107, 639–655.
+     . Saleh K., Wigneron J.-P., de Rosnay P., Calvet J.-C., Escorihuela M.J., Kerr Y., 
+     Waldteufel P. : «Impact of rain interception by vegetation and mulch on the L-band 
+     emission of natural grass» Remote Sensing of Environment, 101, 127-139, 2006
+     doi: 10.1016/j.rse.2005.12.004
+
+     Cross polarization parameter ip_Q in cmem_setup.F90 as in Kerr and Njokui, III TGRS, vol 28(3) 1990
+
+5- Vegetation opacity (CIVEG) in cmem_veg.F90 vegtable.F90 and veg_sub.F90 codes rely on paramaterisations:
+
+    'Kirdyashev' relies on:
+     Kirdyashev et al., 1979: Microwave radiation of the earth's surface in the
+     presence of vegetation cover, Radio Eng. Electr. Phys., Vol. 24, 37-44.
+
+    'Wegmueller' relies on:
+     Wegmueller et al., 1995: Canopy opacity models, Passive Microwave remote 
+     sensing of land-atmosphere interactions, VSP, 375 ff.
+
+    'Wigneron' relies on:
+     .Wigneron et al., 2007, "L-band Microwave Emission of the Biosphere (L-MEB) Model:
+     Description and calibration against experimental
+     data sets over crop fields" Remote Sensing of Environment. Vol. 107, pp. 637-651
+    . Grant, J. P., Wigneron, J. -P., Van de Griend, A. A., Schmidl Søbjærg, S., Skou,
+     N., & Balling, J. (2007). Bray-2004 L-band radiometric field experiment in
+     the Les Landes forest: microwave signal behaviour for varying conditions of
+     ground moisture. Remote Sensing of Environment, 107, 639−655.
+     .Wigneron, et al., "A simple algorithm to retrieve soil moisture 
+     and vegetation biomass using passive microwave measurements 
+     over crop fields," Remote sens. environ., vol. 51, pp. 331-341, 1995.
+
+    'Jackson' relies on:
+     Jackson, T J; Schmugge, T J 1991, Vegetation effects on the microwave 
+     emission of soils, Remote Sensing of Environment. Vol. 36, pp. 203-212. 1991 
+
+6- Atmospheric opacity (CIATM) in cmem_atm.F90 codes rely on parameterisations:
+
+    'Pellarin' relies on:
+     Pellarin, T., et al. (2003), Two-year global simulation of L-band brightness
+     temperature over land, IEEE Trans. Geosci. Remote Sens., 41, 2135–2139.
+
+    'Ulaby' relies on:
+     Ulaby FT, R. K. Moore, and A. K. Fung, Microwave Remote Sensing:
+     Active and Passive. Vol. III. From theory to applications. Artech House,
+     Norwood, MA., 1986.
+    
+
+Dielectric constant of water: dielwat_sub.F90 codes rely on:
+  Dielectric constant of pure water
+    Ulaby FT, R. K. Moore, and A. K. Fung, Microwave Remote Sensing:
+     Active and Passive. Vol. III. From theory to applications. Artech House,
+     Norwood, MA., 1986. p 2020
+  Dielectric constant of saline water
+   1) Stogryn, A. (1971): Equations for calculating the dielectric constant of
+    saline water, IEEE Transactions on Microwave Theory and Techniques,
+    Vol. MTT-19, 733-736.
+   2) Klein, L. A. and C. T. Swift (1977): An improved model
+    for the dielectric constant of sea water at microwave
+    frequencies, IEEE Transactions on  Antennas and Propagation,
+    Vol. AP-25, No. 1, 104-111.
+  Dielectric constant of soil water
+   1) Dobson '85. Modified Debye expression
+         Stern_Gouy double layer theory
+   2) Ulaby FT, R. K. Moore, and A. K. Fung, Microwave Remote Sensing:
+     Active and Passive. Vol. III. From theory to applications. Artech House,
+     Norwood, MA., 1986.  p 2024
+
+
+
+HUT Snow emission model
+=======================
+
+Fortran code for snow emission model was supplied by agreement with FMI,
+and re-written to be included in CMEM.
+Pulliainen, J., M. Hallikainen, and J. Grandell, 1999: HUT snow emission model and its applicability to snow
+water equivalent retrieval. IEEE Trans. Geos. Remot. Sens, 37, 1378–1390.
+
+cmem_snow.F90 Updated to include a new part of code for snow grain size function as described in 
+Boone  A., Description du schema de neige ISBA-ES (Explicit Snow), CNRM, Meteo France, 2009
+
+Mironov dielectric model
+========================
+
+Matlab code of the Mironov dielectric model was provided by INRA/Bordeau and rewritten in Fortran
+
+
+

@@ -1,0 +1,25 @@
+&NAMOPT CIDIEL=, 
+       CITEFF='Choudhury', 
+       CISMR=, 
+       CIRGHR='Wigneron',
+       CIVEG=,
+       CIATM='Pellarin',       
+       CITVEG=,
+       CIDVEG='Ecoclimap',
+       CITDIEL=, 
+       /
+&NAMRAD FGHZ=1.4, 
+        THETA=30,
+       /
+&NAMLEV NLAY_SOIL_MW=,
+        NLAY_SOIL_LS=09,
+       /
+&NAMDEF LOFFCMEM=.False.,
+        LOFIELDEXP=.False.,
+        LGPRINT=,
+        JPHISTLEV=4,
+        CFINOUT='clm',
+        LOMASK_OCEAN=.False.,
+        LOMASK_AUTO=.True.,
+	INPUTSATINFO='../forcing/SMOS_L1orbit_neckar.nc',
+/

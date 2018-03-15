@@ -1,0 +1,139 @@
+######################################################################################
+#
+#    #####   #     #   ####   #     #
+#    #       ##   ##   #      ##   ##
+#    #       #  #  #   ##     #  #  #
+#    #       #     #   #      #     #
+#    #####   #     #   ####   #     #
+#
+#  Copyright ECMWF
+#  CMEM netcdf I/O
+#
+#########################################################################################
+# Main programm is smos_main.F90
+# input files: forcing*
+# input config: input (configuration of namelists)
+# output files: out*
+#########################################################################################
+#
+# FILE DIMENSION DIFFERS DEPENDING ON INPUT FILE (Take care of it)
+#
+#
+##########################################################################################
+# Prepare the forcing file according to your run config. Here netcdf input required
+# Each name of input file starts with 'forcing' 
+# forcing files must be consistent in terms of grid size (checked in rdcmemnetcdfiinfo.F90)
+# example of foring file is provided (global file) 
+#  FORCING FILES IN NETCDF    --->    require option CFINOUT='netcdf'  
+#
+############################################
+#1) Meteo  (Dimension N=lat x lon x time)
+#9 files required for any option:
+############################################
+
+SD.nc  snow depth in water equiv (m)
+RSN.nc snow density (kg/m3)
+
+STL1.nc Soil temperature level 1 (K)
+STL2.nc Soil temperature level 2 (K)
+STL3.nc Soil temperature level 3 (K)
+TSKIN.nc Skin temperature (K)
+
+SWVL1.nc volumetric soil moist level1 (m3/m3)
+SWVL2.nc volumetric soil moist level2 (m3/m3) 
+SWVL3.nc volumetric soil moist level3 (m3/m3)  
+
+###############################################################
+# 2) soil conditions  (Dimension = lat x lon)
+#3 file Required for any option 
+################################################################
+
+ - Z.nc (geopotential at surface in km) 
+  (Take care that is is in km for netcdf input, while m2/s2 when grib or ascii are used)
+ - sand.nc fraction of sandy textured soil (%) (range 0-100)
+ - clay.nc fraction of clay textured soil (%) (range 0-100)
+
+##########################################################
+#3) Vegetation (Dimension = lat x lon)
+#5 files required for any option
+##########################################################
+# in case ecoclimap is choosen, the following files are required
+ 
+ - ECOCVL.nc  fraction of low veg (-) 
+ - ECOCVH.nc  fraction of high veg (-)
+#These fractions are such as their sum is the complement to one of the bare soil fraction:
+#bare soil frac = 1- cvh+cvl
+
+ - ECOTVL.nc  low veg type 
+ - ECOTVH.nc  high veg type
+ - ECOWAT.nc water fraction
+
+# or when Tessel option is choosen:
+
+ - CVL.nc fraction of low veg (-)
+ - CVH.nc fraction of high veg (-)
+#Appart for desert areas these fractions are such as their sum is 1
+#Accordingly a weigting function is applied to these fractions to compute bare soil
+
+ - TVL.nc low veg type
+ - TVH.nc high veg type
+ - LSM.nc land fraction (water fraction is set = 1-LSM) (-)
+
+
+
+#### useful information:
+# ECOCLIMAP types are:
+#No vegetation: 0
+#High vegetation: 1 Decidious forests; 2 Coniferous forests; 3 Rain forests
+#Low vegetation: 4 C3 Grasslands; 5 C4 Grasslands; 6 C3 Crops; 7 C4 Crops
+#
+# TESSEL types are:
+#High vegetation: 3 Evergreen Needleleaf Trees; 4 Deciduous Needleleaf Trees; 5 eciduous Broadleaf Trees;
+#                 6  Evergreen Broadleaf Trees; 18 Mixed Forest/woodland; 19 Interrupted Forest
+#Low vegetation:  1 Crops, Mixed Farming; 2 Short Grass; 7 Tall Grass; 9 Tundra; 10 Irrigated Crops;
+#                 11 Semidesert; 13 Bogs and Marshes; 16 Evergreen Shrubs; 
+#                 17 Deciduous Shrubs; 20 Water and Land Mixtures
+
+# Vegetation tables are provided in vegtable.F90
+
+#########################################
+# 4)  VEGETATION LAI  (Dimension N = lat x lon x time   must be equal to that of meteo fields)
+# 1 file if Ecoclimap
+
+  -ECOLAIL.nc  lai of low veg for each pixel
+
+# 0 file if tessel
+###########################################
+
+# For Otpion CITVEG = 'Tair' or Otpion CIATM='Pellarin' or CIATM='Ulaby' (in input) 
+
+ - 2T.nc (air temp at 2m - K)
+
+
+
+###############################################
+# Vertical discretization in CMEM
+
+# CMEM considers two vertical grids:
+
+ #1- Land Surface Model vertical resolution for soil moisture
+ # and soil temperature profiles (read by CMEM in rdcmem*) 
+ # Default soil layers depths are given in cmem_setup.F90
+ # NLAY_SOIL_LS=3 and soil depths z_lsm(:) defined
+ # the deepest layer define the depth of the soil column
+ # If you want to enter an other input vertical grid:
+ # 	* define in the input file NLAY_SOIL_LS
+ #  * add a file called LSM_VERTICAL_REOL.asc with depth of each layer
+ # (see example for wilheit in io_sample)
+
+ #2- Microwave fine vertical grid: 
+ # a: With CISMR='Fresnel' (default) the number of layer is one (NLAY_SOIL_MW=1)
+ # b: CISMR='Wilheit' must be selected in the file 'input' to allow multi-layer MW emission modelling 
+ # by default it uses NLAY_SOIL_MW=10 layers in cmem_setup.F90
+ # to change it, give a value to NLAY_SOIL_MW in the input file
+ # the layer thicknesses are computed automatically in cmem_soil.F90
+ # the input sm and st profiles read in rdcmem* are interpolated to the 
+ # NLAY_SOIL_MW layers and used in wilheit
+
+
+
