@@ -6,7 +6,7 @@ else
 ifeq "$(HOST)" "juqueen3.fz-juelich.de"
 export FORTRAN_COMPILER = xlf90
 else
-export FORTAN_COMPILER = ifort
+export FORTRAN_COMPILER = ifort
 endif
 endif
 
