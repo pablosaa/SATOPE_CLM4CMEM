@@ -19,8 +19,6 @@ endif
 
 OBJECT = $(SOURCE:.F90=.o)
 
-FORTRAN_COMPILER = gfortran
-
 BIN_PATH = ../../bin
 NETCDF_INCLUDE_PATHS = -I/usr/include 
 NETCDF_LIBRARY_PATHS = -L/usr/lib64 

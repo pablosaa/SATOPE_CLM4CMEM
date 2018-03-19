@@ -29,6 +29,8 @@ contains
     integer :: wrncid, inc_varid, t_varid, tbh_varid, tbv_varid
     integer :: NPIX, NLONS, NLATS, NTIME, NINC
     integer :: tb_dimid(3)
+    integer :: datum_uhrzeit(8)
+    character (len=21) ::DATESTRING
     character (len = *), parameter :: UNITS = "units"
     character (len = *), parameter :: LONG_NAME = "long_name"
     character (len = *), parameter :: SHORT_NAME = "short_name"
@@ -46,6 +48,8 @@ contains
     ELSE
        nc_path_out = trim(nc_out)
     END IF
+    call date_and_time(VALUES=datum_uhrzeit)
+    write(DATESTRING,'(I2.2"."I2.2"."I4 "T" I2.2":"I2.2":"I2.2)') datum_uhrzeit((/3,2,1,5,6,7/))
     ! 1-RD: Geopotential at surface [km]
     ! -----------------------------------------------------------------
     ! Create the file.
@@ -100,7 +104,8 @@ contains
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "title", "Satellite TB_HV"))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "orbit", trim(SAT%OrbitFileName)))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "sensor",trim(SAT%name)))
-    call check( nf90_put_att(wrncid, NF90_GLOBAL, "creation","pablosaa"))
+    call check( nf90_put_att(wrncid, NF90_GLOBAL, "creation",DATESTRING))
+    call check( nf90_put_att(wrncid, NF90_GLOBAL, "contact","pablosaa@uni-bonn.de"))
 
     call check(nf90_enddef(wrncid))  ! End of definition
 
@@ -149,7 +154,7 @@ contains
     ! Define the dimensions.
     call check( nf90_inq_dimid(rdncid, "NINC", inc_dimid))
     call check( nf90_inq_dimid(rdncid, "NPIXEL", pix_dimid))
-    
+
     call check( nf90_inquire_dimension(rdncid,pix_dimid,len=NPIXELS))
     call check( nf90_inquire_dimension(rdncid,inc_dimid,len=NINCS))
     ! Allocating variables in SATELLITE:
@@ -182,7 +187,7 @@ contains
 
     call check( nf90_get_att(rdncid,nf90_global,"SATELLITE_name",SAT%name))
    call check( nf90_get_att(rdncid,nf90_global,"Orbit_altitude_km",SAT%orbit))
-   call check( nf90_get_att(rdncid,nf90_global,"Orbit_azimuth_deg",SAT%azimuth)) 
+   call check( nf90_get_att(rdncid,nf90_global,"Orbit_azimuth_deg",SAT%azimuth))
    call check( nf90_get_att(rdncid,nf90_global,"SENSOR_antenna_m",SAT%antenna))
    call check( nf90_get_att(rdncid,nf90_global,"SENSOR_wavelength_m",SAT%wavelength))
 
@@ -201,7 +206,7 @@ contains
   ! See LICENCE
   ! ---------------------------------------------------------------
   subroutine write_cmem_forcing(LS,nc_out)
-    
+
     implicit none
     ! INPUT VARIABLES:
     type(CLM_DATA), intent(in) :: LS
@@ -235,7 +240,7 @@ contains
     ELSE
        nc_path_out = trim(nc_out)
     END IF
-    
+
     if(SHOWINFO) print*, 'OUTPUTS at: -->'//trim(nc_path_out)
     ! -----------------------------------------------------------------
     ! 0-LSM: ASCII file with soil level profile
@@ -1144,7 +1149,7 @@ contains
   ! ---------------------------------------------------------------
   ! Get dimensions of CLM NetCDF input file and check consistency
   ! (not very useful but needed to match CMEM structure)
-  ! 
+  !
   ! (c) 2016 P. Saavedra Garfias (pablosaa@uni-bonn.de) UNI BONN
   ! see: LICENSE.TXT
   subroutine info_CLM_file(CLM_fname,Ntot,SURF,inhr,ilev)
@@ -1188,7 +1193,7 @@ contains
     ! Info: make checking for SURF too?
     ! ...
 
-    call check( nf90_close(ncid))    
+    call check( nf90_close(ncid))
     ! Info: checking consistency of dimensions with input arguments
     if(present(inhr)) then
        if(inhr.lt.1.or.inhr.gt.NTIMES) stop 'Non consistent TIME dim'
@@ -1217,10 +1222,10 @@ contains
   ! - nlev      : (OPTIONAL) number of SM level to consider
   ! - idxtime   : (OPTIONAL) index of the time dimension to consider
   ! OUTPUTS:
-  ! * 
-  ! 
+  ! *
+  !
   ! ------------------------------------------------------------------
-  
+
   subroutine read_CLM_file(CLM_fname,SAT,SURF, SMf,inhr,ilev, LS)
 
     !use constants, only : RHOw
@@ -1245,7 +1250,7 @@ contains
     integer :: lon_dimid, lat_dimid, lev_dimid, time_dimid
     integer :: start3(3), count3(3), start4(4), count4(4)
     character (len=10) :: dimname, varname, varunits
-    integer, dimension(3) :: datum, uhrzeit
+    integer, dimension(8) :: datum_uhrzeit
 
     character (len=90) :: FILETMP
     character (len = *), parameter :: LAT_NAME = "lat"
@@ -1272,7 +1277,7 @@ contains
     integer, parameter :: stime=1  ! which time-step (30=7.5hr)
     !  level indexes e.g. idxlev(nlev) = (/1, 2, 3/) 1st, 2nd, 3rd levels
     integer, dimension(:), allocatable :: idxlev
-    !logical :: 
+    !logical ::
     SHOWINFO = .true.
 
     ! * Open CLM netcdf input file:
@@ -1371,7 +1376,7 @@ contains
 
     if(.not.present(SMf)) then
        SM_faktor=(/1,0/)
-    else 
+    else
        SM_faktor=SMf
     end if
 
@@ -1408,7 +1413,7 @@ contains
 
     ! 1.2 -> calculating slope and aspect from TOPO Z:
     allocate(LS%slope(NLONS,NLATS), LS%aspect(NLONS,NLATS))
-    allocate(LS%theta_inc(NLONS,NLATS,NINC))  
+    allocate(LS%theta_inc(NLONS,NLATS,NINC))
 
     call gradientm(LS%Z, LS%longxy, LS%latixy, LS%slope,&
          LS%aspect, LS%resol_km)
@@ -1546,9 +1551,8 @@ contains
 
     !
     ! * Generating input data for CMEM
-    call idate(datum)
-    call itime(uhrzeit)
-    write(LS%DATESTRING,'(I2.2"."I2.2"."I4 "T" I2.2":"I2.2":"I2.2)') datum, uhrzeit
+    call date_and_time(VALUES=datum_uhrzeit)
+    write(LS%DATESTRING,'(I2.2"."I2.2"."I4 "T" I2.2":"I2.2":"I2.2)') datum_uhrzeit((/3,2,1,5,6,7/))
 
 
     status = nf90_close(ncid)
@@ -1584,14 +1588,14 @@ contains
     IF( ALLOCATED (xtimes)) DEALLOCATE (xtimes)
     ALLOCATE(xtimes(NTIME))
     xtimes = LS%time
-    
+
     return
 
   end subroutine read_CLM_file
   ! ===================== END OF READING CLM FILE SUBROUTINE =========
 
 
-  
+
   ! ---------------------------------------------------------------
   ! ---------------------------------------------------------------
   ! SUBROUTINE FOR CHECKING STATUS OF NETCDF INTRINSIC FUNCTIONS
@@ -1600,7 +1604,7 @@ contains
     use netcdf, only : nf90_strerror, nf90_noerr
     integer, intent ( in) :: status
     character (len=*), optional, intent(in) :: messages
-    
+
     if(status /= nf90_noerr) then
        print *, 'Error: ',trim(nf90_strerror(status)),'->'//messages
        stop
