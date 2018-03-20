@@ -9,15 +9,18 @@
 #
 
 
-ifdef STDALONE
-	EXECFI = cmem #TESTBED       # cmem
-	SOURCE = cmem_main.F90 #TESTBED.F90   # cmem_main.F90
+ifdef MUTTER
+	SOURCE = $(MUTTER)
+	TMP    = $(MUTTER:.F90=)
+	EXECFI = $(notdir $(TMP))
+	# EXECFI = TESTBED 
+	# SOURCE = TESTBED.F90 
 else
-	EXECFI = testbed       # cmem
-	SOURCE = TESTBED.F90   # cmem_main.F90
+	EXECFI = cmem
+	SOURCE = cmem_main.F90
 endif
 
-OBJECT = $(SOURCE:.F90=.o)
+OBJECT = $(notdir $(SOURCE:.F90=.o))
 
 BIN_PATH = ../../bin
 NETCDF_INCLUDE_PATHS = -I/usr/include 
@@ -48,26 +51,9 @@ ${NETCDF_LIBRARY_PATHS} ${NETCDF_LIBRARY_NAMES}
 	$(RM) *mod
 	$(MV)
 
-ifdef STDALONE
-	@echo "*** CMEM stand-alone has been created!"
-else
-	@echo "*** Satellite Operator has been created!"
-endif
-
 clean:
 	$(RM) *o
 	$(RM) *mod
-
-help:
-	@echo "USAGE:"
-	@echo "To generates the CMEM stand-alone version:"
-	@echo "   > make STDALONE=1 "
-	@echo "or..."
-	@echo "To generates the SAT OP subroutine version:"
-	@echo "   > make "
-	@echo "Sometimes it is better to clean before make:"
-	@echo "   > make clen "
-	@echo ":)"
 
 #toolbox_clm4cmem.o : $(CLM4CMEM_PATH)toolbox_clm4cmem.F90
 #	${FORTRAN_COMPILER} -c $(CLM4CMEM_PATH)toolbox_clm4cmem.F90
