@@ -188,7 +188,7 @@ contains
     Ninc = size(SAT%theta)
 
     theta_i = asin((1.0_JPRM+(SAT%orbit/Ro))*sin(DEG2rad*SAT%theta))  ! [rad]
-    print*,'Number of angles: ',size(SAT%theta), shape(theta_hat)
+
     Axy = sin(aspect*DEG2rad)*sin(SAT%azimuth*DEG2rad) + &
          cos(aspect*DEG2rad)*cos(SAT%azimuth*DEG2rad)
     do k=1,Ninc
@@ -263,8 +263,8 @@ contains
     !!! CIDVEG='Ecoclimap'  ! should be in cmem_init or input
     !!! CITVEG='Tsurf'  ! should be in cmem_init or input
     ! end of OPT variables assigned
-    print*, N, NLONS, NLATS, NLEV, NTIMES, NINC !, CLM_fname
-    if(SHOWINFO) print*,LS%DATESTRING
+    if(SHOWINFO) print*, 'Dims: ', N, NLONS, NLATS, NLEV, NTIMES, NINC
+    if(SHOWINFO) print*, 'Date_string of creation: ', LS%DATESTRING
 
     ! ===============================================================
     ! Setting CMEM variables to memory (no NetCDF files are created)
@@ -279,7 +279,7 @@ contains
     if(allocated(fncfield)) deallocate(fncfield)
     allocate(fncfield(JJ,1))
     fncfield = reshape(LS%Z,(/JJ,1/))
-    print*, 'fcnfield : ', shape(fncfield)
+    if(SHOWINFO) print*, 'fcnfield fZ: ', shape(fncfield)
     do I=1,N-JJ+1,JJ ! filling up fZ with NTIME times
        fZ(I:) = fncfield(:,1)
     end do
@@ -567,7 +567,7 @@ contains
     if(.not.allocated(ftheta_inc)) allocate(ftheta_inc(N,NINC))
     if(allocated(fncfield)) deallocate(fncfield)
     allocate(fncfield(JJ,NINC))
-    print*, 'memory: shape of theta_inc: ', shape(LS%theta_inc)
+    
     fncfield = reshape(LS%theta_inc,(/JJ,NINC/))
     do I=1,N-JJ+1,JJ ! filling up fZ with NTIME times
        ftheta_inc(I:,:) = fncfield !(:,1)

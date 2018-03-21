@@ -406,13 +406,16 @@ SELECT CASE (CFINOUT)
         ! PSG: Writing Satellite Operator NetCDF only.
         CLNAME='../output/out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'
         call write_satellite_operator(SAT,CLNAME)
-     else if(JPHISTLEV.eq.5_JPIM.and.JJINC.eq.NINC) then
+     end if
+     if(JPHISTLEV.eq.5_JPIM.and.JJINC.eq.NINC) then
         ! PSG: Writing High-res level1 AND satellite opertor NetCDFs.
         CLNAME='../output/out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'
         call write_satellite_operator(SAT,CLNAME)
-     else if(JPHISTLEV.eq.6_JPIM.and.JJINC.eq.NINC) then
+     end if
+     if(JPHISTLEV.eq.6_JPIM.and.JJINC.eq.NINC) then
         WRITE(NULOUT,*) 'Data to keep in memory! no file storated!'
-     else
+     end if
+     if(JPHISTLEV.gt.6_JPIM) then
         WRITE(NULOUT,*) 'ERROR by selecting the write JPHISTLEV param.'
      end if
 

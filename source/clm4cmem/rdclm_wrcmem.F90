@@ -1148,7 +1148,7 @@ contains
   ! ANCILLARY SUBROUTINE FOR read_CLM_file
   ! ---------------------------------------------------------------
   ! Get dimensions of CLM NetCDF input file and check consistency
-  ! (not very useful but needed to match CMEM structure)
+  ! (not very useful but needed to match CMEM code structure)
   !
   ! (c) 2016 P. Saavedra Garfias (pablosaa@uni-bonn.de) UNI BONN
   ! see: LICENSE.TXT
@@ -1207,7 +1207,7 @@ contains
     else
        if(SHOWINFO) print*, 'Number of levels ', NLEVSOI
     end if
-    print*,'going out of info'
+
     !Ntot = NLONS*NLATS*NTIMES
     Ntot = (/NLONS,NLATS,NTIMES/)  ! output variable
     return
@@ -1218,12 +1218,18 @@ contains
   ! ------------------------------------------------------------------
   ! INPUTS:
   ! - clm_fname : NetCDF input CLM file
-  ! - sm_factor : (OPTIONAL) [factor, bias] to convert soil moisture
-  ! - nlev      : (OPTIONAL) number of SM level to consider
-  ! - idxtime   : (OPTIONAL) index of the time dimension to consider
+  ! - SAT       : SATELLITE structure type with information about sensor
+  ! - SURF      : (OPTIONAL) NetCDF file with Surface information for CLM file
+  ! - SMf       : (OPTIONAL) [factor, bias] to scale soil moisture (test only)
+  ! - nlev      : (OPTIONAL) number of SM level to consider (0 all levels)
+  ! - idxtime   : (OPTIONAL) index of the time dimension to consider (0 all times)
   ! OUTPUTS:
-  ! *
+  ! - LS        : CLM_DATA structure type with all information read 
+  !               from the specified CLM NetCDF file.
   !
+  ! (c) 2015 P. Saavedra Garfias (pablosaa@uni-bonn.de)
+  ! UNIVERSITY OF BONN
+  ! See: LICENCE.TXT
   ! ------------------------------------------------------------------
 
   subroutine read_CLM_file(CLM_fname,SAT,SURF, SMf,inhr,ilev, LS)
@@ -1277,8 +1283,6 @@ contains
     integer, parameter :: stime=1  ! which time-step (30=7.5hr)
     !  level indexes e.g. idxlev(nlev) = (/1, 2, 3/) 1st, 2nd, 3rd levels
     integer, dimension(:), allocatable :: idxlev
-    !logical ::
-    SHOWINFO = .true.
 
     ! * Open CLM netcdf input file:
     status = nf90_open(CLM_fname,nf90_nowrite, ncid)
@@ -1360,7 +1364,7 @@ contains
     count4 = (/NLONS,NLATS,NLEVSOI,NTIME/)
 
     ! Setting default values for input variables in case not passed in call
-    if(.not.present(ilev)) then !nlev.eq.0) then
+    if(.not.present(ilev)) then 
        nlev = NLEVSOI
     else
        nlev = ilev
