@@ -1,0 +1,5 @@
+# Ignoring the NetCDF files for input CMEM:
+/forcing/*
+# ingnoring the NetCDF output files from CMEM:
+/output/*
+
