@@ -34,7 +34,7 @@ SELECT CASE ( CFINOUT )
   CASE ('clm')  ! PSG: new case for CLM support     
      call read_satellite_info(INPUTSATINFO,SAT)
      NINC = size(SAT%theta)
-     call info_CLM_file(CLNAME,Ntot=Nvars,inhr=1)
+     call info_CLM_file(CLNAME,Ntot=Nvars,inhr=INDEXTIME)
      NLONS = Nvars(1)
      NLATS = Nvars(2)
      NTIMES = Nvars(3)
@@ -130,7 +130,8 @@ CASE ('netcdf') !netcdfcase
    CALL RDCMEMNETCDF !netcdfcase
 !
 CASE ('clm')   ! PSG: following 3 lines clm4cmem implementations:
-   call read_CLM_file(CLNAME,inhr=1,SAT=SAT,LS=CLMVARS)
+   print*, "Allocated Number of points are: " , N
+   call read_CLM_file(CLNAME, inhr=INDEXTIME, ilev=nlay_soil_ls, SAT=SAT,LS=CLMVARS)
    call memory_cmem_forcing(CLMVARS)
 
 !  CASE ('ifs')
@@ -380,7 +381,7 @@ WRITE(CANGLE,'(I2)') INT(SAT%theta(JJINC))  ! PSG: changing theta
 ! 4. Write outputs
 !-----------------
 !
-WRITE(NULOUT,*) 'CMEM_main, write output'
+WRITE(NULOUT,*) 'CMEM_main, write output THETA_inc='//CANGLE//' deg'
 !
 
 SELECT CASE (CFINOUT)
@@ -404,13 +405,13 @@ SELECT CASE (CFINOUT)
      end if
      if(JPHISTLEV.eq.4_JPIM.and.JJINC.eq.NINC) then
         ! PSG: Writing Satellite Operator NetCDF only.
-        CLNAME='../output/out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'
-        call write_satellite_operator(SAT,CLNAME)
+        CLNAME='out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'
+        call write_satellite_operator(SAT, CLNAME, CLM_fname=CLMVARS%CLM_fname)
      end if
      if(JPHISTLEV.eq.5_JPIM.and.JJINC.eq.NINC) then
         ! PSG: Writing High-res level1 AND satellite opertor NetCDFs.
-        CLNAME='../output/out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'
-        call write_satellite_operator(SAT,CLNAME)
+        CLNAME='out_level4_'//CNAMEID//'_'//cfreq//'_'//trim(SAT%name)//'.nc'  !../output/
+        call write_satellite_operator(SAT, CLNAME, CLM_fname=CLMVARS%CLM_fname)
      end if
      if(JPHISTLEV.eq.6_JPIM.and.JJINC.eq.NINC) then
         WRITE(NULOUT,*) 'Data to keep in memory! no file storated!'

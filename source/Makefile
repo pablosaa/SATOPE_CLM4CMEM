@@ -1,6 +1,6 @@
 HOST = $(shell hostname)
 
-ifeq "$(HOST)" "mysu.yolle"
+ifeq ("$(HOST)", $(filter "$(HOST)", "mysu.yolle" "r233"))
 export FORTRAN_COMPILER = gfortran
 else
 ifeq "$(HOST)" "juqueen.fz-juelich.de"

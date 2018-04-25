@@ -73,7 +73,7 @@ module clm4cmem
 
   type CLM_DATA
      sequence
-     character (len=200) :: CLM_fname  ! CLM file name
+     character (len=300) :: CLM_fname  ! CLM file name
      character (len=21) :: DATESTRING  ! date and time of creation
      character :: CLMver = "CLM3.5"
 

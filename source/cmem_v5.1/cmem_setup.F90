@@ -73,6 +73,7 @@ LGPRINT = .False.       ! No debug info
 JPHISTLEV = 1_JPIM      ! Basic output (TBH, TBH, TEFF)
 CFINOUT = 'netcdf'        ! Default Input/output is NetCDF ! PSG: 
 INPUTSATINFO = '../forcing/SMOS_L1orbit_neckar.nc' ! PSG: default SAT
+INDEXTIME = 0_JPIM      ! PSG: by default time index zero, meaning read all time dimentions
 
 IF (LOFFCMEM) NULTMP = 77
 IF (LOFFCMEM) NULNAM = 14 
@@ -90,7 +91,8 @@ WRITE(NULOUT,'(a22,a7)') ' Input/output format = ',CFINOUT
 WRITE(NULOUT,*) 'Field experiment (1 grid point) = :',LOFIELDEXP
 WRITE(NULOUT,*) 'Automatic Masking of wrong points = ',LOMASK_AUTO
 WRITE(NULOUT,*) 'Ocean Masking = ',LOMASK_OCEAN
-WRITE(NULOUT,*) 'SAELLITE INFO FILE = ',INPUTSATINFO
+WRITE(NULOUT,*) 'SAELLITE INFO FILE = ',INPUTSATINFO  ! PSG: new feature
+WRITE(NULOUT,*) 'CLM data time index= ',INDEXTIME     ! PSG: new feature
 
 !----------------------------
 ! 2.0 Default *SETUP* parameters

@@ -14,16 +14,16 @@ contains
   ! UNIVERSITY OF BONN, GERMANY
   ! See LICENCE
   ! ---------------------------------------------------------------
-  subroutine write_satellite_operator(SAT,OUT_fname,nc_out)
+  subroutine write_satellite_operator(SAT,OUT_fname,nc_out,CLM_fname)
     use clm4cmem, only : SATELLITE
     implicit none
     ! INPUT VARIABLES:
     type(SATELLITE), intent(in) :: SAT
     character(len=*), intent(in) :: OUT_fname
-    character(len=*), optional, intent(in) :: nc_out
+    character(len=*), optional, intent(in) :: nc_out, CLM_fname
 
     ! Local VARIABLES
-    character (len=:), allocatable :: nc_path_out
+    character (len=:), allocatable :: nc_path_out, forcing_file
     integer :: I, J, idxstr ! JJ, N
     integer :: pix_dimid, lon_varid, lat_varid, time_dimid, inc_dimid
     integer :: wrncid, inc_varid, t_varid, tbh_varid, tbv_varid
@@ -44,10 +44,16 @@ contains
     NINC  = size(SAT%theta)
     NTIME = size(SAT%time)
     IF(.not.present(nc_out)) THEN
-       nc_path_out = './'
+       nc_path_out = '../output/'
     ELSE
        nc_path_out = trim(nc_out)
     END IF
+    IF(.not.present(CLM_fname)) THEN
+       forcing_file = 'not specified'
+    ELSE
+       forcing_file = trim(CLM_fname)
+    END IF
+    print*, 'Forcing FILE is: ', forcing_file
     call date_and_time(VALUES=datum_uhrzeit)
     write(DATESTRING,'(I2.2"."I2.2"."I4 "T" I2.2":"I2.2":"I2.2)') datum_uhrzeit((/3,2,1,5,6,7/))
     ! 1-RD: Geopotential at surface [km]
@@ -104,6 +110,7 @@ contains
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "title", "Satellite TB_HV"))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "orbit", trim(SAT%OrbitFileName)))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "sensor",trim(SAT%name)))
+    call check( nf90_put_att(wrncid, NF90_GLOBAL, "forcing", forcing_file))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "creation",DATESTRING))
     call check( nf90_put_att(wrncid, NF90_GLOBAL, "contact","pablosaa@uni-bonn.de"))
 
@@ -1145,7 +1152,7 @@ contains
   !:)
 
   ! ===============================================================
-  ! ANCILLARY SUBROUTINE FOR read_CLM_file
+  ! ANCILLARY SUBROUTINE FOR info_CLM_file
   ! ---------------------------------------------------------------
   ! Get dimensions of CLM NetCDF input file and check consistency
   ! (not very useful but needed to match CMEM code structure)
@@ -1160,7 +1167,8 @@ contains
     character (len=*), intent(in) :: CLM_fname
     integer(kind=JPIM), intent(out) :: Ntot(3)
     character (len=*), intent(in), optional :: SURF
-    integer, intent(in), optional :: inhr, ilev
+    integer, dimension(3), intent(in), optional :: inhr
+    integer, intent(in), optional :: ilev
 
     ! Info: Local variables
     integer :: NLEVLAK, NLEVSOI, NLEVPFT, NLATS, NLONS, NTIMES
@@ -1196,8 +1204,13 @@ contains
     call check( nf90_close(ncid))
     ! Info: checking consistency of dimensions with input arguments
     if(present(inhr)) then
-       if(inhr.lt.1.or.inhr.gt.NTIMES) stop 'Non consistent TIME dim'
-       NTIMES = 1
+       if(inhr(1).ge.1_JPIM.and.inhr(2).le.NTIMES) then
+          NTIMES = inhr(2) !1
+       elseif(product(inhr).eq.0_JPIM) then
+          continue
+       else
+          stop 'Non consistent TIME dim'
+       end if
     else
        if(SHOWINFO) print*, 'Number of time dim ', NTIMES
     end if
@@ -1243,14 +1256,16 @@ contains
     type(SATELLITE), intent(inout) :: SAT
     character (len=*), intent(in), optional :: SURF
     real, dimension(2), intent(in), optional :: SMf
-    integer, intent(in), optional :: inhr, ilev
+    integer, dimension(3), intent(in), optional :: inhr
+    integer, intent(in), optional :: ilev
     type(CLM_DATA), intent(out) :: LS
 
     ! SUBROUTINE arguments:
     real, dimension(2) :: SM_faktor
     character(len=:), allocatable :: SURF_fname, nc_path_out
     CHARACTER(LEN=100) ::  CFINOUT='clm'        !! Input/output file format
-    integer :: I, idxstr, idxtime, nlev
+    integer :: I, idxstr, nlev
+    integer, dimension(:), allocatable :: idxtime   ! indexes to read from time dim CLM
     integer :: ncid, suid
     integer :: dimid, ndims_in, nvars_in, ngatts_in, unlimdimid_in, status
     integer :: lon_dimid, lat_dimid, lev_dimid, time_dimid
@@ -1324,19 +1339,29 @@ contains
 
     ! Read the time data (and convert to DoY?)
 !!!    if(.not.present(inhr)) then !.AND.idxtime.eq.0) then
-       call check( nf90_inq_dimid(ncid,'time',dimid))
-       call check( nf90_Inquire_Dimension(ncid,dimid,dimname,NTIME))
+    call check( nf90_inq_dimid(ncid,'time',dimid))
+    call check( nf90_Inquire_Dimension(ncid,dimid,dimname,NTIME))
     allocate(time(NTIME))
     call check( nf90_inq_varid(ncid,DOY_NAME,doy_varid))
     call check( nf90_get_var(ncid, doy_varid, time) )
 
-       idxtime= 1  ! read all time-steps in CLM [1...NTIME]
-!!!    else
-       if(present(inhr)) then
-          idxtime = inhr
-          NTIME = 1
-       end if
+     !idxtime= 1  ! read all time-steps in CLM [1...NTIME]
 
+    if(present(inhr)) then
+       if(inhr(1).ge.1_JPIM.and.inhr(2).le.NTIME) then
+          NTIME = inhr(2) ! 1
+          allocate(idxtime(NTIME))
+          idxtime = (/(inhr(1)+(i-1)*inhr(3), i=1,NTIME)/) 
+       elseif(product(inhr).eq.0_JPIM) then
+          allocate(idxtime(NTIME))
+          idxtime = (/(i, i=1,NTIME)/) 
+       else
+          stop 'ERROR: index introduced for time is out of bound.'
+       end if
+    else
+       allocate(idxtime(NTIME))
+       idxtime = (/(i, i=1,NTIME)/)
+    end if
 !!!    call check( nf90_get_var(ncid, doy_varid, time, start=(/idxtime/), count=(/NTIME/)) )
 
     ! Read dimension and value for lake levels
@@ -1358,9 +1383,9 @@ contains
     call check( nf90_Inquire_Dimension(suid,dimid,dimname,NLEVPFT))
 
     ! Defining the range of data to read: case for the time with only 1 value
-    start3 = (/1,1,idxtime/)
+    start3 = (/1,1,idxtime(1)/)
     count3 = (/NLONS,NLATS,NTIME/)
-    start4 = (/1,1,1,idxtime/)
+    start4 = (/1,1,1,idxtime(1)/)
     count4 = (/NLONS,NLATS,NLEVSOI,NTIME/)
 
     ! Setting default values for input variables in case not passed in call
@@ -1396,7 +1421,7 @@ contains
        print*, 'SURF input:-->'//trim(SURF_fname)
        print*, 'Soil Moisture reduction factor: -->',SM_faktor(1),', Bias -->',SM_faktor(2)
        print*, 'Num. of soil levels: --> ', nlev
-       print*, 'UTC Time span: --> ',time(idxtime)/3600.0,' to ', time(idxtime+NTIME-1)/3600.0, 'Hrs'
+       print*, 'UTC Time span: --> ',time(idxtime(1))/3600.0,' to ', time(idxtime(NTIME))/3600.0, 'Hrs'
        print*, 'Number of incidences --> ', NINC
     end if
     ! ---------------------------------------------------
@@ -1557,7 +1582,8 @@ contains
     ! * Generating input data for CMEM
     call date_and_time(VALUES=datum_uhrzeit)
     write(LS%DATESTRING,'(I2.2"."I2.2"."I4 "T" I2.2":"I2.2":"I2.2)') datum_uhrzeit((/3,2,1,5,6,7/))
-
+    ! Including the CLM forcing file for further reference in LS variable:
+    LS%CLM_fname = trim(CLM_fname)
 
     status = nf90_close(ncid)
     IF(status /= nf90_noerr) call check(status)

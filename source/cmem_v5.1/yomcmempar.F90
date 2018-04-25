@@ -152,6 +152,7 @@ CHARACTER(LEN=JPCHARLEN) ::  CFINOUT        !! Input/output file format
 
 !!!type(SATELLITE) :: SAT    ! PSG: to hold Sensor's all information
 CHARACTER(LEN=JPCHARLEN) ::  INPUTNAMLST, INPUTSATINFO ! PSG: input files
+INTEGER(KIND=JPIM) :: INDEXTIME(3)  ! PSG: for specific CLM time index, default all inde
 
 REAL(KIND = JPRM) :: fghz        
 REAL(KIND = JPRM) :: theta      
