@@ -9,8 +9,8 @@ Code for a satellite simulator alike SMOS or SMAP by means of CMEM as radiative 
 		|______ output/
 		|______ scripts/
 		|______ source/
-					|_____ cmem_v5.1/
-					|_____ clm4cmem/
+			|_____ cmem_v5.1/
+			|_____ clm4cmem/
 
 Where:
 */bin* directory is where executable binaries are placed
@@ -21,21 +21,22 @@ Where:
 
 */output* Output NetCDF files (either for classical CMEM or for the satellite operator) will be located in this directory after running the code
 
-*/scripts* Directory containing some useful MATLAB/GNU Octave scripts to deal with the data. e.g. plotting multi-angle multi-files Level 4 CMEM output NetCDF data, plotting Level 1 CMEM output NetCDF data, scripts to create the Satellite input NetCDF information (see below), etc.
+*/scripts* Directory containing some useful MATLAB/GNU_Octave scripts to deal with the data. e.g. plotting multi-angle multi-files Level 4 CMEM output NetCDF data, plotting Level 1 CMEM output NetCDF data, scripts to create the Satellite input NetCDF information (see below), etc.
 
-*/source* this directory is separated in two parts: */cmem__v5.1* where the main CMEM source code is located (this however contains part of source codes which have been modified from the official CMEM distribution), and */clm4cmem* where all codes for the tools necessary to apply the satellite operator are located.
+*/source* this directory is separated in two parts: */cmem_v5.1* where the main CMEM source code is located (this however contains part of source codes which have been modified from the official CMEM distribution), and */clm4cmem* where all codes for the tools necessary to apply the satellite operator are located.
 
 ## CONFIGURE AND BUILDING ##
-The most important feature to configure is the ``FORTRAN_COMPILER`` to use, this can be done by tuning the environment variable ``FORTRAN_COMPILER`` in the Makefile located at /source.
+The most important feature to configure is the environment variable ``FORTRAN_COMPILER`` that defines which compiler to use, this can be done by tuning ``FORTRAN_COMPILER`` in the Makefile located at */source*.
 
-Additionally, the location for the NetCDF ``include`` and ``lib`` directories might be needed to be tuned, that can be done in the Makefile located at /source/cmem__v5.1
+Additionally, the location for the NetCDF ``include`` and ``lib`` directories might be needed to be tuned (system dependent), which can be done in the ``Makefile`` located at */source/cmem_v5.1*
 
-The building process offers two options, namely as Stand-alone executable or as Subroutine to be called from other codes.
-Go to the source directory and see help for details, e.g. type: ``> make help``
+The building process offers the posibility to generate the CMEM satellite operator executable in two flavours, namely as Stand-alone executable or as Subroutine to be called from other program.
+
+Go to the source directory and see help for details, e.g. in command line type: ``> make help``
 
 1. To build the Stand-alone version, type: ``> make``
 	this will produce the executable cmem at the bin directory.
-2. To build the Subroutine version, which will be used under a generic (as example) code file ``TESTBED.F90``, type: ``> make MUTTER=/path/where/codes-is/TESTBED.F90``
+2. To build the Subroutine version, which can be used by any generic code. Here as example a code named ``TESTBED.F90`` is used, type: ``> make MUTTER=/path/where/codes-is/TESTBED.F90``
 this will create the executable ``TESTBED`` at the */bin* directory, this executable includes the Satellite Operator as subroutine within.
 
 ## RUNNING ##
@@ -45,11 +46,11 @@ The above mentioned two flavours to run the Satellite Operator, i.e. Stand-alone
 		USAGE: > ./cmem CLM_input_file.nc [input_parameters_file]
 	Where [input_parameters_file] is optional and indicates the typical CMEM ASCII input file defining the CMEM parameters. By default it will search the file ``input`` in the */inputlst* directory.
 
-	_EXAMPLE_: from command line go to the SATOPE_CLM4CMEM/bin directory and run the program as simple as:
+_EXAMPLE_: from command line go to the SATOPE_CLM4CMEM/bin directory and run the program as simple as:
 
-			> ./cmem /tmp/clm/clmmoas/3022-C347/clmoas.clm2.h0.2008-03-15-00900.nc
+		> ./cmem /tmp/clm/clmmoas/3022-C347/clmoas.clm2.h0.2008-03-15-00900.nc
 
-	this will run CMEM considering as forcing CLM NetCDF file ``clmoas.clm2.h0.2008-03-15-00900.nc`` located at the directory ``/tmp/clm/clmmoas/3022-C347/``. The ancillary NetCDF surface-file corresponding to the CLM file must also be located at that directory (optionally other location can be specified in the code).
+this will run CMEM considering as forcing CLM NetCDF file ``clmoas.clm2.h0.2008-03-15-00900.nc`` located at the directory ``/tmp/clm/clmmoas/3022-C347/``. The ancillary NetCDF surface-file corresponding to the CLM file must also be located at that directory (optionally other location can be specified in the code).
 
 2. Subroutine version: This is for integration of the satellite operator with any software who needs to call the operator. The name of subroutine is ``sat_clm4cmem()``
 
@@ -57,7 +58,7 @@ The above mentioned two flavours to run the Satellite Operator, i.e. Stand-alone
 where ``CLM_input_file`` must be a variable type character containing the full-path of the NetCDF CLM forcing file to process.
 		``input_parameters`` (optional) must be a variable type character containing the name of the ASCII input file with the CMEM parameters to be used, by default the code looks for a file named ``input`` in */inputlst* directory.
 
-	_EXAMPLE_: within any Fortran or C code the Satellite Operator can be accessed as illustrated in the following example:
+_EXAMPLE_: within any Fortran or C code the Satellite Operator can be accessed as illustrated in the following example:
 
 		PROGRAM TESTBED
 
@@ -77,7 +78,7 @@ where ``CLM_input_file`` must be a variable type character containing the full-p
 
 In the example above, the program ``TESTBED`` will call the Satellite Simulator passing the CLM data file */run/data/3022-C347/clmoas.clm2.h0.2008-03-15-00900.nc* as input to be processed, with CMEM parameters specified by the ASCII file name *input_test1* which must be located at */inputlst* directory.
 
-The variable structure ``SAT`` (declared with ``type(SATELLITE)``) contains the output of the satellite operator as well as the satellite information provided as input (see below in parameters). This variable ``SAT`` can be used for any purposes by other procedures.
+The variable structure ``SAT`` (declared with ``type(SATELLITE) :: SAT``) contains the output of the satellite operator as well as the satellite information provided as sensor information (see below in [Configuration Parameters](#configuration-parameters)). This variable ``SAT`` can be used for any purposes by other procedures.
 
 The variable type ``SATELLITE`` is a structure defined at */source/clm4cmem/toolbox_clm4cmem.F90* and it is comprised by the following fields:
 
