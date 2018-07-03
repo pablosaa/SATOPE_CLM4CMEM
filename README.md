@@ -195,10 +195,10 @@ All information displayed in the [GUI](#edit-satellite-info-input) is then store
 ### Read Satellite Info Input ###
  ``retrieve_SATinputdata.m`` This script encompass a function used to load the NetCDF satellite information file, it is used by the GUI ``edit_info_SAT4CMEM`` or can be run independently from workspace. The function runs without parameter or one or two parameters. When invoked without parameters then a Selection File GUI pops-up in order to browse a NetCDF file to open. When used with one parameter, that must be a string indicating the input file, and when used with two parameters then the first is a string with the input file and the second is a string with the absolute path to the input file.
 
- USAGE:
- 	> SAT = retrieve_SATinputdata;
-	> SAT = retrieve_SATinputdata('input_netcdf_file.nc');
-	> SAT = retrieve_SATinputdata('input_netcdf_file.nc','/path_to/file/');
+ 	USAGE:
+ 		> SAT = retrieve_SATinputdata;
+		> SAT = retrieve_SATinputdata('input_netcdf_file.nc');
+		> SAT = retrieve_SATinputdata('input_netcdf_file.nc','/path_to/file/');
 
 It is mandatory to assign an output variable which is a structure of cell containing the data of the different variables of the satellite information file (``SAT`` see [example above](#sat-auxiliary-structure)).
 
@@ -208,7 +208,8 @@ It is mandatory to assign an output variable which is a structure of cell contai
 When run without parameters (or by the GUI), the function first asks where to create the file and the name of it, once selected it creates a NetCDF file alike the ``SMOS_L1orbit_neckar.nc`` which can be used in CMEM by specifying the input parameter ``INPUTSATINFO`` (see section [Configuration Parameters](#cmem-configuration-parameters)).
 
 The function also accept two parameters:
-	> status=create_SATinput_nc(fname,SAT);
+
+	> status = create_SATinput_nc(fname,SAT);
 
 where ``fname`` is a string indicating the full path and the NetCDF file name, and the second argument is ``SAT`` which is the satellite structure containing all the information as indicated in section [Editing GUI](#sat-auxiliary-structure).
 
