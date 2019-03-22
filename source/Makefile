@@ -30,16 +30,17 @@ help:
 	@echo "USAGE:"
 	@echo "To generates the CMEM stand-alone version, execute:"
 	@echo " > make "
-	@echo "or..."
+	@echo "otherwise..."
 	@echo "To generates the SAT OPERATOR subroutine version which will be "
-	@echo "called from any program (in this example TESTBED.F90), execute:"
+	@echo "called from any other program (in this example TESTBED.F90), execute:"
 	@echo " > make MUTTER=/full_path/to_mother/code/TESTBED.F90"
 	@echo "note that MUTTER must be indicated with the full path of the example code TESTBED.F90".
-	@echo "Alternativelly if the mother source code e.g. TESTBED.F90 is located in actual dir: "
+	@echo "Alternativelly if the mother source code e.g. TESTBED.F90 is located in the actual directory: "
 	@echo " > make MUTTER=$$´{PWD}/TESTPED.F90"
-	@echo "might works as well..."
-	@echo "Sometimes it is better to clean object and modules, before new compilation:"
-	@echo " > make clen "
+	@echo "that might works as well..."
+	@echo "Sometimes it is better to clean object and module files before new compilation,"
+	@echo "in that case run:"
+	@echo " > make clean "
 	@echo ":)"
 
 
