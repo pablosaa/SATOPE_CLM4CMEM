@@ -1,6 +1,9 @@
 # SATOPE_CLM4CMEM
 Code for a satellite simulator alike SMOS or SMAP by means of CMEM as radiative transfer and CLM as input for land surface model.
 
+Published at Zenodo under: 
+[![DOI number](https://zenodo.org/badge/DOI/10.5281/zenodo.3516115.svg)](https://zenodo.org/record/3516115)
+
 ## STRUCTURE ##
 	./SATOPE_CLM4CMEM/
 		|______ bin/
